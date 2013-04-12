@@ -1,7 +1,7 @@
 <?php
 $custom_buttons = array();
 if ($BannerAdsManager->user_can_create_region()) {
-	$custom_buttons[] = array('href' => $BannerAdsManager->url('new_ad_region'), 'label' => 'New Region');
+	$custom_buttons[] = array('href' => $BannerAdsManager->url('new_ad_region'), 'label' => 'New Region', 'classname' => 'new-button');
 }
 $custom_buttons[] = array('href' => $BannerAdsManager->url(), 'label' => 'Manage Banner Ads');
 print $Navigation->render_admin_bar($BannerAdsManager,NULL,array(
@@ -29,8 +29,8 @@ if (!empty($ad_regions)) {
 		// where the user has permission to view this page but not delete or edit.
 		?>
 		<td style="text-align: right"><div class="controls">
-			<a href="<?php echo $BannerAdsManager->url('delete_ad_region',$ad_region->id()) ?>" class="delete-button" rel="Ad Region|<?php echo addslashes(H::purify_text($ad_region->name())); if ($ad_region->has_banners()) { echo "|".$ad_region->banner_count()." banner ad".(($ad_region->banner_count() > 1) ? "s" : "")." will also be deleted."; } ?>">Delete</a>
-			<a href="<?php echo $BannerAdsManager->url('edit_ad_region',$ad_region->id()) ?>">Edit</a>
+			<a href="<?php echo $BannerAdsManager->url('delete_ad_region',$ad_region->id()) ?>" class="delete-button" data-item-type="<?php echo __('Ad Region'); ?>" data-item-title="<?php echo Crumbs::entitize_utf8(H::purify_text($ad_region->name())); if ($ad_region->has_banners()) { echo "|".$ad_region->banner_count()." banner ad".(($ad_region->banner_count() > 1) ? "s" : "")." will also be deleted."; } ?>">Delete</a>
+			<a href="<?php echo $BannerAdsManager->url('edit_ad_region',$ad_region->id()) ?>" class="edit-button">Edit</a>
 		</div></td>
 	</tr>
 <?php

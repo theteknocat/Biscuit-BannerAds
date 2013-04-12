@@ -35,20 +35,18 @@ BannerAds = {
 				var banner_id = $(active_checkbox).attr('id').substr(20);	// Everything after 'banner-ad-is-active-'
 				var post_params = 'request_token='+window.sortable_request_token+'&banner_ad[is_active]='+((is_checked) ? 1 : 0);
 				var updated_banner_item_id = $(active_checkbox).parent().parent().parent().parent().attr('id');
-				var banner_set_id = $(active_checkbox).parent().parent().parent().parent().parent().attr('id');
-				var throbber_id = 'region-throbber-'+banner_set_id.substr(11);
-				Biscuit.Crumbs.ShowThrobber(throbber_id);
+				var banner_set_id = $(active_checkbox).parent().parent().parent().parent().parent().attr('id').substr(11);
+				Biscuit.Crumbs.ShowCoverThrobber('banner-ads-'+banner_set_id, 'Saving...');
 				Biscuit.Ajax.Request('/banner-ads/edit/'+banner_id,'server_action',{
 					type: 'post',
 					data: post_params,
 					success: function() {
-						Biscuit.Crumbs.HideThrobber(throbber_id);
+						Biscuit.Crumbs.HideCoverThrobber('banner-ads-'+banner_set_id);
 						if (mode == 'activate') {
 							$('#'+updated_banner_item_id).removeClass('inactive');
 						} else {
 							$('#'+updated_banner_item_id).addClass('inactive');
 						}
-						$('#'+updated_banner_item_id).effect('highlight',{color: '#93f586'});
 					}
 				});
 			},confirm_button_text,function() {
@@ -57,11 +55,15 @@ BannerAds = {
 			});
 		});
 		$('#image-manager-button').click(function() {
-			tinyBrowserPopUp('image',null);
+			if (FileManagerActivate != undefined && $.isFunction(FileManagerActivate.standalone)) {
+				FileManagerActivate.standalone();
+			} else {
+				tinyBrowserPopUp('image',null);
+			}
 			return false;
 		});
 	},
-	RenumberBanners: function(banner_set_id) {
+	RestripeBanners: function(banner_set_id) {
 		var curr_num = 1;
 		$('#banner-ads-'+banner_set_id+' .banner-ad-item').each(function() {
 			// Restripe:
@@ -72,16 +74,7 @@ BannerAds = {
 			} else {
 				$(this).addClass('stripe-odd');
 			}
-			// Change the sort number
-			$('#'+this.id+' .sort-column').html(curr_num);
 			curr_num++;
-		});
-	},
-	HighlightBanners: function(region_id) {
-		$('#banner-ads-'+region_id+' .banner-ad-item').each(function() {
-			$(this).effect('highlight',{color: '#93f586'},1000,function() {
-				$(this).css({background: ''});
-			});
 		});
 	}
 }

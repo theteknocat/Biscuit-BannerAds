@@ -3,7 +3,9 @@
  * Model the ad region DB table
  *
  * @package Modules
+ * @subpackage BannerAds
  * @author Peter Epp
+ * @version $Id: ad_region.php 13843 2011-07-27 19:45:49Z teknocat $
  */
 class AdRegion extends AbstractModel {
 	/**
@@ -18,6 +20,18 @@ class AdRegion extends AbstractModel {
 	 * @var int
 	 */
 	private $_banner_count = 0;
+	/**
+	 * Relationship with banner ads
+	 *
+	 * @var array
+	 */
+	protected $_has_many = array('BannerAd');
+	/**
+	 * Define foreign key for banner ad region id since it doesn't use default naming convention
+	 *
+	 * @var array
+	 */
+	protected $_has_many_key_names = array('BannerAd' => 'region_id');
 	/**
 	 * Return the name of the region with it's specs (width and height) included in brackets
 	 *
@@ -39,7 +53,7 @@ class AdRegion extends AbstractModel {
 		if ($var_name != null) {
 			$first_char = substr($var_name,0,1);
 		}
-		$is_valid = ($var_name != null && preg_match('/([A-Za-z0-9_]+)/',$var_name) && !preg_match('/([0-9]+)/',$first_char));
+		$is_valid = ($var_name != null && !preg_match('/([^A-Za-z0-9_]+)/',$var_name) && !preg_match('/([0-9]+)/',$first_char));
 		if (!$is_valid) {
 			// Set a custom error message for this attribute
 			$this->set_error('variable_name','Provide a variable name that does not begin with a number and contains only numbers, letters and underscores');

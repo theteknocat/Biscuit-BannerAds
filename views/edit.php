@@ -17,14 +17,7 @@
 
 	<?php echo ModelForm::radios($link_target_options,$banner_ad,'link_target') ?>
 
-	<p class="<?php echo $Navigation->tiger_stripe('striped_BannerAd_form') ?>">
-		<?php echo $TinyMce->render_standalone_file_browser_field('image','image','banner_ad[image]',$banner_ad->image_label(),$banner_ad->image(),$banner_ad->image_is_required(),$banner_ad->image_is_valid(),array('maxlength' => '255')) ?>
-		<span class="instructions">
-			<strong>Remember:</strong> if you later move, rename or delete the file using the file manager you will need to update this banner ad accordingly.<br><br><strong>Important:</strong> Before uploading your file please ensure that it is pre-sized to the dimensions of the region selected above.
-		</span>
-	</p>
-
-	<?php echo ModelForm::text($banner_ad,'sort_order','Items with no sort order will come first sorted by title. Note that you can modify the sort order any time from the main ad manager screen by drag-and-drop.') ?>
+	<?php echo ModelForm::managed_file($banner_ad, 'image', 'image', __('<strong>Remember:</strong> if you later move, rename or delete the file using the file manager you will need to update this banner ad accordingly.<br><br><strong>Important:</strong> Before uploading your file please ensure that it is pre-sized to the dimensions of the region selected above.')); ?>
 
 	<?php echo ModelForm::checkbox('1','0',$banner_ad,'is_active') ?>
 

@@ -3,10 +3,11 @@
  * Module for managing banner ads, banner ad regions and rendering banners to view, along with Javascript rotation functionality
  *
  * @package Modules
+ * @subpackage BannerAds
  * @author Peter Epp
  * @copyright Copyright (c) 2009 Peter Epp (http://teknocat.org)
  * @license GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
- * @version 2.0
+ * @version 2.0 $Id: controller.php 14241 2011-09-12 21:59:40Z teknocat $
  */
 class BannerAdsManager extends AbstractModuleController {
 	/**
@@ -61,25 +62,18 @@ class BannerAdsManager extends AbstractModuleController {
 			$this->title('Manager Ad Regions');
 		}
 		$regions = $this->AdRegion->find_all(array('name' => 'ASC'));
-		$banner_ads = $this->BannerAd->find_all(array('region_id' => 'ASC', 'sort_order' => 'ASC', 'title' => 'ASC'));
-		// Put banners into an array by region:
-		foreach ($banner_ads as $banner_ad) {
-			if ($banner_ad->is_active() && !file_exists(SITE_ROOT.$banner_ad->image())) {
-				$banner_ad->set_is_active(0);
-				$banner_ad->save();
-				Session::flash('user_message','The banner ad "'.$banner_ad->title().'" has been deactivated since it\'s image file ('.$banner_ad->image().') cannot be found.');
-			}
-			$banners_by_region[$banner_ad->region_id()][] = $banner_ad;
-		}
-		// Sort the banner ads by region by the region names and build an array of region names by id for the view:
 		foreach ($regions as $region) {
-			if (!empty($banners_by_region[$region->id()])) {
-				$banners_by_region_for_view[$region->id()] = $banners_by_region[$region->id()];
+			$banner_ads[$region->id()] = $region->banner_ads(array('region_id' => 'ASC', 'sort_order' => 'ASC', 'title' => 'ASC'));
+			foreach ($banner_ads[$region->id()] as $index => $banner_ad) {
+				if ($banner_ads[$region->id()][$index]->is_active() && !file_exists(SITE_ROOT.$banner_ads[$region->id()][$index]->image())) {
+					$banner_ads[$region->id()][$index]->set_is_active(0);
+					$banner_ads[$region->id()][$index]->save();
+					Session::flash('user_message','The banner ad "'.$banner_ads[$region->id()][$index]->title().'" has been deactivated since it\'s image file ('.$banner_ads[$region->id()][$index]->image().') cannot be found.');
+				}
 			}
-			$region_names[$region->id()] = $region->name_with_specs();
 		}
-		$this->set_view_var('region_names',$region_names);
-		$this->set_view_var('banner_ads',$banners_by_region_for_view);
+		$this->set_view_var('regions',$regions);
+		$this->set_view_var('banner_ads',$banner_ads);
 		$this->render();
 	}
 	/**
@@ -101,7 +95,13 @@ class BannerAdsManager extends AbstractModuleController {
 	 * @author Peter Epp
 	 */
 	protected function action_secondary() {
-		$this->register_js('footer','jquery.cycle.all.min.js');
+		if (LibraryLoader::is_available('JqueryCycle')) {
+			// Load jQuery Cycle library if present
+			LibraryLoader::load('JqueryCycle');
+		} else {
+			// Fall back on the copy included with the module:
+			$this->register_js('footer','jquery.cycle.all.min.js');
+		}
 		$this->register_js('footer','banner_ad_rotator.js');
 		$regions = $this->AdRegion->find_all();
 		$banners = $this->BannerAd->find_all_by('is_active','1',array('sort_order' => 'ASC'));
@@ -220,17 +220,36 @@ class BannerAdsManager extends AbstractModuleController {
 	protected function act_on_build_admin_menu($caller) {
 		$menu_items = array();
 		if ($this->user_can_create()) {
-			$menu_items['Insert New Ad'] = $this->url('new');
+			$menu_items['Insert New Ad'] = array(
+				'url' => $this->url('new'),
+				'ui-icon' => 'ui-icon-plus'
+			);
 		}
 		if ($this->user_can_index()) {
-			$menu_items['Manage Ads'] = $this->url();
+			$menu_items['Manage Ads'] = array(
+				'url' => $this->url(),
+				'ui-icon' => 'ui-icon-wrench'
+			);
 		}
 		if ($this->user_can_index_ad_region()) {
-			$menu_items['Manage Regions'] = $this->url('index_ad_region');
+			$menu_items['Manage Regions'] = array(
+				'url' => $this->url('index_ad_region'),
+				'ui-icon' => 'ui-icon-wrench'
+			);
 		}
 		if (!empty($menu_items)) {
 			$caller->add_admin_menu_items('Banner Ads',$menu_items);
 		}
+	}
+	/**
+	 * Add help menu link
+	 *
+	 * @param string $caller 
+	 * @return void
+	 * @author Peter Epp
+	 */
+	protected function act_on_build_help_menu($caller) {
+		$caller->add_help_for('BannerAds');
 	}
 	/**
 	 * Return a data set array formatted for use with the form select helper for all the pages in the site.
