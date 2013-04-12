@@ -1,7 +1,7 @@
 BannerRotator = {
 	init: function() {
-		jQuery('div.banner-ads').each(function() {
-			var my_classes = jQuery(this).attr('class').split(' ');
+		$('div.banner-ads').each(function() {
+			var my_classes = $(this).attr('class').split(' ');
 			for (var index in my_classes) {
 				var curr_class = my_classes[index];
 				if (typeof(curr_class) == 'string') {
@@ -20,7 +20,7 @@ BannerRotator = {
 				Biscuit.Console.log("Found banner ad region to cycle: "+this.id);
 				Biscuit.Console.log("Effect: "+my_effect);
 				Biscuit.Console.log("Interval: "+my_interval);
-				jQuery(this).cycle({
+				$(this).cycle({
 					fx: my_effect,
 					timeout: my_interval,
 					pause: true
@@ -30,6 +30,6 @@ BannerRotator = {
 	}
 }
 
-jQuery(document).ready(function() {
+$(document).ready(function() {
 	BannerRotator.init();
 });

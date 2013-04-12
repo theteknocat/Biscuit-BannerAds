@@ -20,7 +20,7 @@
 	<p class="<?php echo $Navigation->tiger_stripe('striped_BannerAd_form') ?>">
 		<?php echo $TinyMce->render_standalone_file_browser_field('image','image','banner_ad[image]',$banner_ad->image_label(),$banner_ad->image(),$banner_ad->image_is_required(),$banner_ad->image_is_valid(),array('maxlength' => '255')) ?>
 		<span class="instructions">
-			<strong>Remember:</strong> if you later move, rename or delete the file using the file manager you will need to update this banner ad accordingly.
+			<strong>Remember:</strong> if you later move, rename or delete the file using the file manager you will need to update this banner ad accordingly.<br><br><strong>Important:</strong> Before uploading your file please ensure that it is pre-sized to the dimensions of the region selected above.
 		</span>
 	</p>
 

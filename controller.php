@@ -14,7 +14,7 @@ class BannerAdsManager extends AbstractModuleController {
 	 *
 	 * @var array
 	 */
-	protected $_dependencies = array('Authenticator','Jquery','index' => 'TinyMce', 'edit' => 'TinyMce','new' => 'TinyMce');
+	protected $_dependencies = array('Authenticator','index' => 'TinyMce', 'edit' => 'TinyMce','new' => 'TinyMce');
 	/**
 	 * List of special actions that require an id
 	 *
@@ -118,6 +118,7 @@ class BannerAdsManager extends AbstractModuleController {
 				$region_content = '';
 				$var_name = $region->variable_name();
 				$region_div_id = 'ad-region-'.implode('-',explode('_',$var_name));
+				$region_content = '';
 				if (!empty($banners_by_region[$region->id()])) {
 					$view_filename = 'banner_ads/views/ad_regions/'.$var_name.'.php';
 					$view_vars = array(
@@ -130,13 +131,6 @@ class BannerAdsManager extends AbstractModuleController {
 					} else {
 						$region_content = Crumbs::capture_include('banner_ads/views/ad_regions/generic.php',$view_vars);
 					}
-				} else {
-					$width = $region->width();
-					$height = $region->height();
-					$region_content = <<<HTML
-<div style="width: {$width}px; height: {$height}px; overflow: hidden; background: #ccc" id="{$region_div_id}" class="banner-ads">
-</div>
-HTML;
 				}
 				$this->set_view_var('ad_region_'.$var_name,$region_content);
 			}
@@ -214,6 +208,28 @@ HTML;
 	protected function act_on_compile_footer() {
 		if ($this->is_primary() && ($this->action() == 'index' || $this->action() == 'edit' || $this->action() == 'new')) {
 			$this->Biscuit->append_view_var('footer',$this->Biscuit->ExtensionTinyMce()->render_standalone_tb_browser_script());
+		}
+	}
+	/**
+	 * Add banner ad management links to admin menu for users with permission
+	 *
+	 * @param object $caller 
+	 * @return void
+	 * @author Peter Epp
+	 */
+	protected function act_on_build_admin_menu($caller) {
+		$menu_items = array();
+		if ($this->user_can_create()) {
+			$menu_items['Insert New Ad'] = $this->url('new');
+		}
+		if ($this->user_can_index()) {
+			$menu_items['Manage Ads'] = $this->url();
+		}
+		if ($this->user_can_index_ad_region()) {
+			$menu_items['Manage Regions'] = $this->url('index_ad_region');
+		}
+		if (!empty($menu_items)) {
+			$caller->add_admin_menu_items('Banner Ads',$menu_items);
 		}
 	}
 	/**
@@ -301,7 +317,7 @@ HTML;
 		$management_page = DB::fetch_one("SELECT `id` FROM `page_index` WHERE `slug` = 'banner_ads'");
 		if (!$management_page) {
 			// Add banner_ads page (super admin access by default):
-			DB::insert("INSERT INTO `page_index` SET `parent` = 9999999, `slug` = 'banner-ads', `title` = 'Manage Banner Ads', `access_level` = 99");
+			DB::insert("INSERT INTO `page_index` SET `parent` = 9999999, `slug` = 'banner-ads', `title` = 'Manage Banner Ads', `access_level` = 0");
 			// Get module row ID:
 			$module_id = DB::fetch_one("SELECT `id` FROM `modules` WHERE `name` = 'BannerAds'");
 			// Remove from module pages first to ensure clean install:
@@ -324,7 +340,7 @@ HTML;
 		$module_id = DB::fetch_one("SELECT `id` FROM `modules` WHERE `name` = 'BannerAds'");
 		DB::query("DELETE FROM `module_pages` WHERE `module_id` = {$module_id}");
 		DB::query("DELETE FROM `page_index` WHERE `slug` = 'banner_ads'");
-		DB::query("DROP TABLE IF EXISTS `banner_ads'");
+		DB::query("DROP TABLE IF EXISTS `banner_ads`");
 		DB::query("DROP TABLE IF EXISTS `ad_regions`");
 		Permissions::remove(__CLASS__);
 	}

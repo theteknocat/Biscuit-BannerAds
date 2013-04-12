@@ -1,11 +1,11 @@
-.inactive div.ad-info {
+.inactive .ad-info {
 	opacity: 0.4;
 	filter:alpha(opacity=40);
 	-moz-opacity: 0.4;
 	-khtml-opacity: 0.4;
 }
 
-.inactive:hover div.ad-info {
+.inactive:hover .ad-info {
 	opacity: 1;
 	filter:alpha(opacity=100);
 	-moz-opacity: 1;
@@ -22,30 +22,41 @@
 
 .banner-ad-set {
 	clear: both;
+	margin: 0;
 	padding: 0;
 	overflow: hidden;
 }
 
-.banner-ad-item div.ad-info {
+.banner-ad-item {
+	margin: 0;
+}
+
+.banner-ad-item .clearance {
+	height: 1px;
+	line-height: 1px;
+	margin: 0;
+	padding: 0;
+	clear: both;
+}
+
+.banner-ad-item .ad-info {
 	float: left;
 	padding: 8px;
 	margin: 0;
 }
-.banner-ad-item div.ad-info.details {
-	float: none !important;
-}
-.banner-ad-item div.ad-info h2, #ad-region-list td h2 {
+
+.banner-ad-item .ad-info h2, #ad-region-list td h2 {
 	font-size: 14px;
 	font-weight: bold;
 	margin: 0 0 5px;
 }
 
-.banner-ad-item div.ad-info .small {
+.banner-ad-item .ad-info .small {
 	margin: 0;
 }
 
-.banner-ad-item div.ad-info.admin {
-	float: right !important;
+.banner-ad-item .ad-info.admin {
+	float: right;
 }
 
 .banner-ad-set .stripe-odd, #ad-region-list .stripe-odd {
@@ -56,16 +67,16 @@
 	background: #ddd;
 }
 
-.banner-ad-set div.sort-column {
+.banner-ad-set .sort-column {
 	font-size: 16px;
 	text-align: center;
 	vertical-align: middle;
 	width: 30px;
-	padding: 0 5px 0;
 	color: #888;
+	padding: 5px;
 }
 
-.banner-ad-set div.sort-column.draggable {
+.banner-ad-set .sort-column.draggable {
 	cursor: move;
 	padding: 5px 5px 15px;
 	background: url(/modules/banner_ads/images/move-icon.gif) center bottom no-repeat;
@@ -81,7 +92,7 @@
 	float: left;
 	width: 30px;
 	height: 30px;
-	background: url(/modules/banner_ads/images/ajax_throbber.gif) left top no-repeat;
+	background: url(/framework/themes/admin/images/throbber-light-lrg.gif) left top no-repeat;
 	text-indent: -3000em;
 }
 
